@@ -15,12 +15,12 @@ class Line:Shape {
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y)
+        super.init(X: X, Y: Y, H: theHeight, W: theWidth)
     }
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double, options:Options) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y, options: options)
+        super.init(X: X, Y: Y, H: theHeight, W: theWidth, options: options)
     }
     
     override func draw(_ theContext: CGContext) {

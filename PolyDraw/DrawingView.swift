@@ -12,21 +12,23 @@ import FirebaseDatabase
 class DrawingView: UIView {
     
     var shapeType = 0
-    var theShapes = [Shape]()
+    var theShapes = Dictionary<Int64,Shape>()
     var initialPoint: CGPoint!
     var isThereAPartialShape : Bool = false
     var thePartialShape : Shape!
     var options = Options() //gets initialized by the ViewController
     var undoBtn = UIBarButtonItem()
-    var user:String?
-    var ref:FIRDatabaseReference?
+   // var user:String?
+    var ref:FIRDatabaseReference?  
+    var lastShapeAddedID:[Int64]?
+    var totalShapesAdded:Int64 = 0
     
     override func draw(_ rect: CGRect) {
         let possibleContext = UIGraphicsGetCurrentContext()
         
         if let theContext = possibleContext {
             for aShape in self.theShapes {
-                aShape.draw(theContext)
+                aShape.value.draw(theContext)
             }
             if self.isThereAPartialShape {
                 self.thePartialShape.draw(theContext)
@@ -87,7 +89,28 @@ class DrawingView: UIView {
             let newPoint = touch.location(in: self)
             
             undoBtn.isEnabled = true
-            self.theShapes.append(theShape)
+            
+            //Dont append let 
+            //self.theShapes[self.totalShapesAdded] = theShape
+            
+            if self.lastShapeAddedID != nil {
+                self.lastShapeAddedID?.append(self.totalShapesAdded)
+            }else{
+                self.lastShapeAddedID = [self.totalShapesAdded]
+            }
+
+            self.ref?.child("Shapes").child("TotalShapesAdded").setValue(self.totalShapesAdded + 1)
+            //Save shape with options the database under shapes/shapeid/<String,Int64>
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last)).child("Shapetype").setValue(self.shapeType)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("X").setValue(theShape.X)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("Y").setValue(theShape.Y)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("H").setValue(theShape.H)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("W").setValue(theShape.W)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("LineWidth").setValue(theShape.options.lineWidth)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("LineColor").setValue(theShape.options.lineColor)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("Filled").setValue(theShape.options.filled)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("FilledColor").setValue(theShape.options.fillColor)
+
             if(shapeType != 3){
                 self.isThereAPartialShape = false
             }else {

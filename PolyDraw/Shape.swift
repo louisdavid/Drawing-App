@@ -11,16 +11,24 @@ import UIKit
 class Shape {
     var X:Double
     var Y:Double
+    var H:Double
+    var W:Double
+    
     var options:Options
     
-    init(X:Double, Y:Double) {
+    init(X:Double, Y:Double, H:Double, W:Double) {
         self.X = X
         self.Y = Y
+        self.H = H
+        self.W = W
         self.options = Options()
     }
-    init(X:Double, Y:Double, options:Options) {
+    
+    init(X:Double, Y:Double,H:Double, W:Double, options:Options) {
         self.X = X
         self.Y = Y
+        self.H = H
+        self.W = W
         self.options = options
     }
     
