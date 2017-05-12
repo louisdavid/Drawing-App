@@ -19,8 +19,7 @@ class DrawingView: UIView {
     var options = Options() //gets initialized by the ViewController
     var undoBtn = UIBarButtonItem()
     var user:String?
-    
-    var ref:FIRDatabaseReference = FIRDatabase.database().reference()
+    var ref:FIRDatabaseReference?
     
     override func draw(_ rect: CGRect) {
         let possibleContext = UIGraphicsGetCurrentContext()

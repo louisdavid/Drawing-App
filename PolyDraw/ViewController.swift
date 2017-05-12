@@ -16,34 +16,31 @@ class ViewController: UIViewController, OptionsSavable {
     @IBOutlet weak var undoBtn: UIBarButtonItem!
     var user:String = "User1"
     var ref:FIRDatabaseReference?
-    var userKey:String = "1"
+    var numUsers:Int64 = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        //if options were saved previously
-        // options = saved options
-        self.drawingView.options = options
         undoBtn.isEnabled = false
+        self.drawingView.options = options
         self.drawingView.undoBtn = undoBtn
+        self.drawingView.ref = self.ref
         
-        self.ref = FIRDatabase.database().reference()
         
-        //check which player you are
-        self.ref?.child("Users").child("1").observeSingleEvent(of: .value, with: {(snapshot) in
-            let value = snapshot.value as? String
+        self.ref?.child("Users").observe(.childRemoved, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
             if let _ = value{
-                self.userKey = "2"
-                self.user = "User2"
-                self.ref?.child("Users").child("2").setValue(self.user)
-            }else{
-                self.ref?.child("Users").child("1").setValue(self.user)
+                self.ref?.child("NumberOfUsersOnline").observeSingleEvent(of: .value, with: { (snapshot) in
+                    let val = snapshot.value as? Int64
+                    if let c = val {
+                        self.numUsers = c - 1
+                    }
+                    self.ref?.child("NumberOfUsersOnline").setValue(self.numUsers)
+                    if(self.numUsers <= 1){
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                })
             }
-            //Delete current User on app shutdown
-            self.ref?.child("Users").child(self.userKey).onDisconnectRemoveValue()
         })
-        //Delete shapes database
-        self.ref?.child("Shapes").removeValue()
     }
 }
 
