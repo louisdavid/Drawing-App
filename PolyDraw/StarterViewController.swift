@@ -24,18 +24,6 @@ class StarterViewController: UIViewController {
         
         self.ref = FIRDatabase.database().reference()
         
-        /*//Keep track of TotalUsers for more connections
-        self.ref?.child("TotalUsers").observe(.value, with: { (snapshot) in
-            let value = snapshot.value as? Int64
-            if let c = value{
-                self.totalUsers = c
-            }
-            if self.newUser {
-                self.newUser = false
-                self.totalUsers += 1
-                self.ref?.child("TotalUsers").setValue(self.totalUsers)
-            }
-        })*/
         //change view controller if there is more than one player connected
         self.uint = (self.ref?.child("NumberOfUsersOnline").observe(.value, with: { (snapshot) in
             let value = snapshot.value as? Int64
@@ -52,7 +40,6 @@ class StarterViewController: UIViewController {
             let value = snapshot.value as? Int64
             if let c = value{
                 self.numUsers = c + 1
-                //self.user = "User" + String(self.totalUsers)
             }
             self.ref?.child("NumberOfUsersOnline").setValue(self.numUsers)
             //Delete current User on app shutdown

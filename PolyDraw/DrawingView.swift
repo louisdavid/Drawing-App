@@ -18,7 +18,6 @@ class DrawingView: UIView {
     var thePartialShape : Shape!
     var options = Options() //gets initialized by the ViewController
     var undoBtn = UIBarButtonItem()
-   // var user:String?
     var ref:FIRDatabaseReference?  
     var lastShapeAddedID:[Int64]?
     var totalShapesAdded:Int64 = 0
@@ -26,10 +25,21 @@ class DrawingView: UIView {
     override func draw(_ rect: CGRect) {
         let possibleContext = UIGraphicsGetCurrentContext()
         
+        var count:Int64 = 0
+        var fS = false
         if let theContext = possibleContext {
-            for aShape in self.theShapes {
-                aShape.value.draw(theContext)
+        
+            for i in self.theShapes {
+                fS = false
+                while(!fS){
+                    if self.theShapes[count] != nil{
+                        self.theShapes[count]?.draw(theContext)
+                        fS = true
+                    }
+                    count += 1
+                }
             }
+
             if self.isThereAPartialShape {
                 self.thePartialShape.draw(theContext)
             }
@@ -84,36 +94,23 @@ class DrawingView: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.isThereAPartialShape = false
         if let theShape = self.thePartialShape {
             let touch = touches.first! as UITouch
             let newPoint = touch.location(in: self)
-            
             undoBtn.isEnabled = true
-            
-            //Dont append let 
-            //self.theShapes[self.totalShapesAdded] = theShape
             
             if self.lastShapeAddedID != nil {
                 self.lastShapeAddedID?.append(self.totalShapesAdded)
             }else{
                 self.lastShapeAddedID = [self.totalShapesAdded]
             }
-
             self.ref?.child("Shapes").child("TotalShapesAdded").setValue(self.totalShapesAdded + 1)
             //Save shape with options the database under shapes/shapeid/<String,Int64>
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last)).child("Shapetype").setValue(self.shapeType)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("X").setValue(theShape.X)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("Y").setValue(theShape.Y)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("H").setValue(theShape.H)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("W").setValue(theShape.W)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("LineWidth").setValue(theShape.options.lineWidth)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("LineColor").setValue(theShape.options.lineColor)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("Filled").setValue(theShape.options.filled)
-            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last!)).child("FilledColor").setValue(theShape.options.fillColor)
+            self.ref?.child("Shapes").child(String(describing: self.lastShapeAddedID?.last)).setValue(theShape.toDict((self.lastShapeAddedID?.last)!))
 
-            if(shapeType != 3){
-                self.isThereAPartialShape = false
-            }else {
+            self.thePartialShape = nil
+            if(shapeType == 3){
                 self.thePartialShape = Line(X: Double(newPoint.x),
                                             Y: Double(newPoint.y),
                                             theHeight: Double(newPoint.y),
@@ -121,9 +118,8 @@ class DrawingView: UIView {
                                             options: Options(options))
                 self.initialPoint.x = newPoint.x
                 self.initialPoint.y = newPoint.y
+                self.isThereAPartialShape = true
             }
-        }else{
-            self.isThereAPartialShape = false
         }
     }
 }

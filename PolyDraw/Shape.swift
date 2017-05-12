@@ -11,24 +11,18 @@ import UIKit
 class Shape {
     var X:Double
     var Y:Double
-    var H:Double
-    var W:Double
     
     var options:Options
     
-    init(X:Double, Y:Double, H:Double, W:Double) {
+    init(X:Double, Y:Double) {
         self.X = X
         self.Y = Y
-        self.H = H
-        self.W = W
         self.options = Options()
     }
     
-    init(X:Double, Y:Double,H:Double, W:Double, options:Options) {
+    init(X:Double, Y:Double, options:Options) {
         self.X = X
         self.Y = Y
-        self.H = H
-        self.W = W
         self.options = options
     }
     
@@ -43,6 +37,15 @@ class Shape {
     }
     
     func draw(_ theContext:CGContext){}
+    
+    func toDict(_ key:Int64) -> [String:Any]{
+        var dict: Dictionary<String,Any> = [:]
+        dict["X"] = self.X
+        dict["Y"] = self.Y
+        dict["Options"] = self.options.toDict()
+        dict["Key"] = key
+        return dict
+    }
 }
 
 

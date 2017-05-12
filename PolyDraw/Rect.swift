@@ -9,18 +9,19 @@
 import UIKit
 
 class Rect:Shape {
+
     var theHeight:Double
     var theWidth:Double
     
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y, H: theHeight, W: theWidth)
+        super.init(X: X, Y: Y)
     }
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double, options:Options) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y, H: theHeight, W: theWidth, options: options)
+        super.init(X: X, Y: Y, options: options)
     }
     
     override func draw(_ theContext: CGContext) {
@@ -30,6 +31,13 @@ class Rect:Shape {
         theContext.fillPath()
         theContext.addRect(rect)
         theContext.strokePath()
+    }
+    override func toDict(_ key:Int64) -> [String : Any] {
+        var dict = super.toDict(key)
+        dict["H"] = self.theHeight
+        dict["W"] = self.theWidth
+        dict["ShapeType"] = 0
+        return dict
     }
 }
 

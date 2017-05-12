@@ -15,12 +15,12 @@ class Line:Shape {
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y, H: theHeight, W: theWidth)
+        super.init(X: X, Y: Y)
     }
     init(X:Double, Y:Double, theHeight:Double, theWidth:Double, options:Options) {
         self.theHeight = theHeight
         self.theWidth = theWidth
-        super.init(X: X, Y: Y, H: theHeight, W: theWidth, options: options)
+        super.init(X: X, Y: Y, options: options)
     }
     
     override func draw(_ theContext: CGContext) {
@@ -28,5 +28,12 @@ class Line:Shape {
         theContext.addLine(to: CGPoint(x: self.theWidth, y: self.theHeight))
         fillOptionsInContext(context: theContext)
         theContext.strokePath()
+    }
+    override func toDict(_ key:Int64) -> [String : Any] {
+        var dict = super.toDict(key)
+        dict["ShapeType"] = 2
+        dict["H"] = self.theHeight
+        dict["W"] = self.theWidth
+        return dict
     }
 }

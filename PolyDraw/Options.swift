@@ -60,4 +60,13 @@ class Options {
         default: return UIColor.gray.cgColor
         }
     }
+    
+    func toDict() -> [String:Any] {
+        var dict: Dictionary<String,Any> = [:]
+        dict["LineWidth"] = self.lineWidth
+        dict["LineColor"] = self.lineColor
+        dict["Filled"] = self.filled
+        dict["FilledColor"] = self.fillColor
+        return dict
+    }
 }
